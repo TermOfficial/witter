@@ -6,5 +6,9 @@
         <div class="settings">
             <a href="/home.php">Home</a>&nbsp;&nbsp;<a href="/l.php">Find People</a>&nbsp;&nbsp;<a href="/manage">Your Profile</a>&nbsp;&nbsp;<a href="/help">Help</a>&nbsp;&nbsp;<a href="/signout.php">Sign out</a>
         </div>
+    <?php } else { ?>
+        <div class="settings">
+            <a href="/home.php">All Weets</a>&nbsp;&nbsp;<a href="/register.php">Register</a>&nbsp;&nbsp;<a href="/">Login</a>
+        </div>
     <?php } ?>
 </div>

@@ -26,8 +26,17 @@ function getWeetFromRID($tag, $connection) {
     $stmt->bind_param("i", $tag);
     $stmt->execute();
     $result = $stmt->get_result();
-    $user = $result->fetch_assoc();
-    return $user;
+    $weet = $result->fetch_assoc();
+    return $weet;
+}
+
+function getWeetFromID($tag, $connection) {
+    $stmt = $connection->prepare("SELECT * FROM weets WHERE id = ?");
+    $stmt->bind_param("i", $tag);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $weet = $result->fetch_assoc();
+    return $weet;
 }
 
 function getGroupFromId($id, $connection) {
@@ -126,9 +135,9 @@ function isAdmin($username, $conn) {
     $stmt->close();
 }
 
-function deleteComment($id, $conn) {
-    $stmt = $conn->prepare("DELETE FROM comments WHERE id = ?");
-    $stmt->bind_param("i", $id);
+function deleteWeet($rid, $conn) {
+    $stmt = $conn->prepare("DELETE FROM weets WHERE realid = ?");
+    $stmt->bind_param("s", $rid);
     $stmt->execute();
     $stmt->close();
 }
@@ -317,7 +326,7 @@ function parseText($text) {
             && isset($url['query']))
         {
             parse_str($url['query'], $query);
-            return sprintf('<iframe class="embedded-video" src="http://www.youtube.com/embed/%s" allowfullscreen></iframe>', $query['v']);
+            return sprintf('<iframe width="480" height="272" class="embedded-video" src="http://www.youtube.com/embed/%s" allowfullscreen></iframe>', $query['v']);
         }
 
         if(in_array($url['host'], array('www.bitview.net', 'bitview.net'))
@@ -325,7 +334,7 @@ function parseText($text) {
             && isset($url['query']))
         {
             parse_str($url['query'], $query);
-            return sprintf('<iframe id="embedplayer" src="http://www.bitview.net/embed.php?v=%s" width="480" height="72" allowfullscreen scrolling="off" frameborder="0"></iframe>', $query['v']);
+            return sprintf('<iframe id="embedplayer" src="http://www.bitview.net/embed.php?v=%s" width="480" height="272" allowfullscreen scrolling="off" frameborder="0"></iframe>', $query['v']);
             //<iframe id="embedplayer" src="http://www.bitview.net/embed.php?v=TRVF8uiPJZ0" width="448" height="382" allowfullscreen scrolling="off" frameborder="0"></iframe>
         }
 
@@ -334,13 +343,14 @@ function parseText($text) {
             && isset($url['query']))
         {
             parse_str($url['query'], $query);
-            return sprintf('<iframe scrolling="no" frameborder="0" style="overflow: hidden;" src="https://witter.spacemy.xyz/embed/?i=%s" height="200" width="495" title="Reweet"></iframe>', $query['i']);
+            return sprintf('<iframe scrolling="no" frameborder="0" style="overflow: hidden;" src="https://witter.spacemy.xyz/embed/?i=%s" height="123" width="495" title="Reweet"></iframe>', $query['i']);
             //<iframe id="embedplayer" src="http://www.bitview.net/embed.php?v=TRVF8uiPJZ0" width="448" height="382" allowfullscreen scrolling="off" frameborder="0"></iframe>
         }
         //links
         return sprintf('<a href="%1$s">%1$s</a>', $arr[0]);
     }, $text);
     $text = preg_replace("/@([a-zA-Z0-9-]+|\\+\\])/", "<a href='/u.php?n=$1'>@$1</a>", $text);
+    $text = preg_replace("/#([a-zA-Z0-9-]+|\\+\\])/", "<a href='/hashtags.php?n=$1'>#$1</a>", $text);
     $text = str_replace(PHP_EOL, "<br>", $text);
 
     return $text;

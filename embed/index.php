@@ -24,7 +24,7 @@
                             <td>
                                 <img id="pfp" src="/dynamic/pfp/<?php echo getPFPFromUser($row['author'], $conn); ?>">
                             </td>
-                            <td><a href="/u.php?n=<?php echo handleTag($row['author']); ?>"><?php echo($row['author']); ?></a>
+                            <td><a href=""><?php echo($row['author']); ?></a>
                                 <?php if(returnVerifiedFromUsername($row['author'], $conn) != "") { ?> <span style="border-radius: 10px; background-color: deepskyblue; color: white; padding: 3px;"><?php echo(returnVerifiedFromUsername($row['author'], $conn)); ?></span> <?php } ?>
                                 <div id="feedtext"><?php echo parseText($row['contents']); ?> </div>
                                 <small><?php echo time_elapsed_string($row['date']); ?> from web

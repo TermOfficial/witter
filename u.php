@@ -1,9 +1,9 @@
 <?php require($_SERVER['DOCUMENT_ROOT'] . "/static/config.inc.php"); ?>
 <?php require($_SERVER['DOCUMENT_ROOT'] . "/static/conn.php"); ?>
 <?php require($_SERVER['DOCUMENT_ROOT'] . "/lib/profile.php");
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+//ini_set('display_errors', 1);
+//ini_set('display_startup_errors', 1);
+//error_reporting(E_ALL);
 ?>
 <!DOCTYPE html>
 <html>
@@ -20,30 +20,29 @@ error_reporting(E_ALL);
 </head>
 <body id="front">
 <div id="container">
-    <?php require($_SERVER['DOCUMENT_ROOT'] . "/static/header.php");
-    if($_SERVER['REQUEST_METHOD'] == 'POST') {
-        if(!isset($_SESSION['siteusername'])){ $error = "you are not logged in"; goto skipcomment; }
-        if(!$_POST['comment']){ $error = "your comment cannot be blank"; goto skipcomment; }
-        if(strlen($_POST['comment']) > 500){ $error = "your comment must be shorter than 500 characters"; goto skipcomment; }
-        if(!isset($_POST['g-recaptcha-response'])){ $error = "captcha validation failed"; goto skipcomment; }
-        if(!validateCaptcha($config['recaptcha_secret'], $_POST['g-recaptcha-response'])) { $error = "captcha validation failed"; goto skipcomment; }
-
-        $stmt = $conn->prepare("INSERT INTO `weets` (realid, author, contents) VALUES (?, ?, ?)");
-        $stmt->bind_param("sss", $uniqid, $_SESSION['siteusername'], $text);
-        $uniqid = time() . uniqid();
-        $text = htmlspecialchars($_POST['comment']);
-        $stmt->execute();
-        $stmt->close();
-        skipcomment:
-    }
-    ?>
+    <?php require($_SERVER['DOCUMENT_ROOT'] . "/static/header.php"); ?>
     <div id="content">
+        <?php if(!isset($_SESSION['siteusername'])) { ?>
+            <div style="background-color: lightyellow;" class="wrapper">
+                <big><big><big>Hey there! <b><?php echo $user['username']; ?></b> is using Witter.</big></big></big><br>
+                <img style="float: left; margin-right: 5px;" src="/static/girl.gif">Witter is a free service that lets you keep in touch with people through the exchange of quick, frequent answers to one simple question: What are you doing? Join today to start recieving <?php echo $user['username']; ?>'s updates.
+            </div><br><br><br><br><br><br>
+        <?php } ?>
         <div class="wrapper">
             <?php if($user['banstatus'] == "suspended") { ?>
                 <br>
                 <div style='padding: 5px; border: 5px solid green;'>
                     <h4 id='noMargin'>
                         This user has been suspended.
+                    </h4>
+                </div>
+                <?php die(); ?>
+            <?php } ?>
+            <?php if(!isset($user['banstatus'])) { ?>
+                <br>
+                <div style='padding: 5px; border: 5px solid green;'>
+                    <h4 id='noMargin'>
+                        This user does not exist or has been permanately deleted.
                     </h4>
                 </div>
                 <?php die(); ?>
@@ -62,35 +61,42 @@ error_reporting(E_ALL);
                         <td> </td>
                     </tr>
                 </table><br>
-                <center>
-                    <?php if(isset($_SESSION['errorMsg'])) { echo "<div style='padding: 5px; border: 5px solid green;'><h4 id='noMargin'>" . $_SESSION['errorMsg']; unset($_SESSION['errorMsg']); echo "</h4></div><br>"; }?>
-                    <?php
-                        if(ifFollowing(rhandleTag($_GET['n']), @$_SESSION['siteusername'], $conn) == false) {?>
-                            <a href="/follow.php?n=<?php echo $user['username']; ?>"><button>Follow</button></a>
-                        <?php } else { ?>
-                            <a href="/unfollow.php?n=<?php echo $user['username']; ?>"><button>Unfollow</button></a>
-                        <?php }
-                    ?>
-                </center><br>
 
                 <div class="altbg">
                     <b>Tweets</b><span id="floatRight"><?php echo getWeets(rhandleTag($_GET['n']), $conn); ?></span>
-                </div><br>
-                <?php
-                $stmt = $conn->prepare("SELECT * FROM follow WHERE reciever = ?");
-                $stmt->bind_param("s", $user['username']);
-                $stmt->execute();
-                $result = $stmt->get_result();
-                while($row = $result->fetch_assoc()) {
-                    ?>
-                    <a href="/u.php?n=<?php echo handleTag($row['sender']); ?>"><img style="width: 30px; height: 30px;" src="/dynamic/pfp/<?php echo getPFPFromUser($row['sender'], $conn); ?>"></a>
+                </div>
+                <span id="blue"><a style="text-decoration: none; padding-left: 5px;color: #6d94c8;" href="/favorites.php?n=<?php echo handleTag($user['username']); ?>">Favorites</a></span>
+                <br><br>
+                <div class="altbg">
+                    <span id="blue">Followers</span><br>
                     <?php
-                }
-                $stmt->close();
-                ?>
+                        $stmt = $conn->prepare("SELECT * FROM follow WHERE reciever = ?");
+                        $stmt->bind_param("s", $user['username']);
+                        $stmt->execute();
+                        $result = $stmt->get_result();
+                        while($row = $result->fetch_assoc()) {
+                            ?>
+                            <a href="/u.php?n=<?php echo handleTag($row['sender']); ?>"><img style="width: 30px; height: 30px;" src="/dynamic/pfp/<?php echo getPFPFromUser($row['sender'], $conn); ?>"></a>
+                            <?php
+                        }
+                        $stmt->close();
+                    ?>
+                </div><br>
+                <div class="altbg">
+                    <span id="blue">Bio</span>
+                    <?php echo $user['bio']; ?>
+                </div>
             </div>
             <div class="customtopLeft">
-                <img id="pfp" style="height: 10%; width: 13%;" src="/dynamic/pfp/<?php echo $user['pfp']; ?>"><h1><?php echo $user['username']; ?></h1>
+                <img id="pfp" style="height: 13%; width: 13%;" src="/dynamic/pfp/<?php echo $user['pfp']; ?>"><h1 style="margin-left: 80px;"><?php echo $user['username']; ?></h1><br>
+                <?php if(isset($_SESSION['errorMsg'])) { echo "<div style='padding: 5px; border: 5px solid green;'><h4 id='noMargin'>" . $_SESSION['errorMsg']; unset($_SESSION['errorMsg']); echo "</h4></div><br>"; }?>
+                    <?php
+                    if(ifFollowing(rhandleTag($_GET['n']), @$_SESSION['siteusername'], $conn) == false) {?>
+                        <a href="/follow.php?n=<?php echo $user['username']; ?>"><button>Follow</button></a>
+                    <?php } else { ?>
+                        <a href="/unfollow.php?n=<?php echo $user['username']; ?>"><button>Unfollow</button></a>
+                    <?php }
+                ?>
                 <table id="feed">
                     <tr>
                         <th style="width: 48px;">&nbsp;</th>
@@ -107,15 +113,40 @@ error_reporting(E_ALL);
                     ?>
                         <tr>
                             <big><big><big>
-                                <td>
-                                    <img id="pfp" src="/dynamic/pfp/<?php echo getPFPFromUser($row['author'], $conn); ?>">
-                                </td>
-                                <td><a href="/u.php?n=<?php echo handleTag($row['author']); ?>"><?php echo $row['author']; ?></a><div id="feedtext"><?php echo parseText($row['contents']); ?> </div>
-                                    <small><?php echo time_elapsed_string($row['date']); ?> from <a href="/v.php?rid=<?php echo $row['realid']; ?>">web</a>
-                                        <a href="like.php?id=<?php echo $row['id']; ?>">🧡</a> 💬<?php echo getComments($row['realid'], $conn); ?>
-                                    </small>
-                                </td>
-                            </big></big></big>
+                                        <td>
+                                            <img id="pfp" src="/dynamic/pfp/<?php echo getPFPFromUser($row['author'], $conn); ?>">
+                                        </td>
+                                        <td><a href="/u.php?n=<?php echo handleTag($row['author']); ?>"><?php echo($row['author']); ?></a>
+                                            <?php if(returnVerifiedFromUsername($row['author'], $conn) != "") { ?> <span style="border-radius: 10px; background-color: deepskyblue; color: white; padding: 3px;"><?php echo(returnVerifiedFromUsername($row['author'], $conn)); ?></span> <?php } ?>
+                                            <div id="floatRight" class="dropdown">
+                                                <span><img style="vertical-align: middle;" src="/static/witter-dotdotdot.png"></span>
+                                                <div class="dropdown-content">
+                                                    <a href="#<?php //echo report.php?r=$row['realid']; ?>"><img style="vertical-align: middle;" src="/static/witter-report.png"></a><br>
+                                                    <?php if(isset($_SESSION['siteusername']) && $row['author'] == $_SESSION['siteusername']) { ?>
+                                                        <a href="/delete.php?rid=<?php echo $row['realid']; ?>"><img style="vertical-align: middle;" src="/static/witter-trash.png"></a><br>
+                                                        <a href="/edit.php?rid=<?php echo $row['realid']; ?>"><img style="vertical-align: middle;" src="/static/witter-edit.png"></a><br>
+                                                    <?php } ?>
+                                                </div>
+                                            </div>
+                                            <div id="feedtext"><?php echo parseText($row['contents']); ?> </div>
+                                            <small><?php echo time_elapsed_string($row['date']); ?> from web
+                                                <?php if(ifLiked($_SESSION['siteusername'], $row['id'], $conn) == true) { ?>
+                                                    <a href="/unlike.php?id=<?php echo $row['id']; ?>"><img style="vertical-align: middle;" src="/static/witter-like.png">Unlike</a>
+                                                <?php } else { ?>
+                                                    <a href="/like.php?id=<?php echo $row['id']; ?>"><img style="vertical-align: middle;" src="/static/witter-liked.png">Like</a>
+                                                <?php } ?>
+                                                <a href="/v.php?rid=<?php echo $row['realid']; ?>"><img style="vertical-align: middle;" src="/static/witter-reply.png">Reply</a>
+                                                <?php echo getComments($row['realid'], $conn); ?><img style="vertical-align: middle;" src="/static/witter-replies.png">
+                                                <a href="/home.php?text=https://witter.spacemy.xyz/embed/?i=<?php echo $row['realid']; ?>"><img style="vertical-align: middle;" src="/static/witter-reweet.png">Reweet</a>
+                                            </small><br>
+                                            <?php
+                                            $likes = getLikesReal($row['id'], $conn);
+                                            while($row = $likes->fetch_assoc()) {
+                                                ?>
+                                                <a href="/u.php?n=<?php echo handleTag($row['fromu']); ?>"><img style="width: 30px; height: 30px; margin-left: 2px;" id="pfp" src="/dynamic/pfp/<?php echo getPFPFromUser($row['fromu'], $conn); ?>"></a>&nbsp;
+                                            <?php } ?>
+                                        </td>
+                                    </big></big></big>
                         </tr>
                     <?php
                         }

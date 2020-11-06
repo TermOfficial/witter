@@ -68,15 +68,19 @@
                                 <th style="width: 33%;">&nbsp;</th>
                             </tr>
                             <tr>
-                                <td><big><big><big><b>5</b></big></big></big><br><span id="blue">following</span></td>
-                                <td><big><big><big><b>5</b></big></big></big><br><span id="blue">followers</span></td>
-                                <td><big><big><big><b>5</b></big></big></big><br><span id="blue">tweets</span></td>
+                                <td><big><big><big><b><?php echo getFollowing($_SESSION['siteusername'], $conn); ?></b></big></big></big><br><span id="blue">following</span></td>
+                                <td><big><big><big><b><?php echo getFollowers($_SESSION['siteusername'], $conn); ?></b></big></big></big><br><span id="blue">followers</span></td>
+                                <td><big><big><big><b><?php echo getWeets(rhandleTag($_SESSION['siteusername']), $conn); ?></b></big></big></big><br><span id="blue">tweets</span></td>
                             </tr>
                         </table><br>
+                        <?php require($_SERVER['DOCUMENT_ROOT'] . "/static/followRequire.php"); ?>
                         <div class="altbg">
                             <a href="/home.php">Home</a><br>
                             <a href="/pms.php">Private Messages [200]</a>
-                        </div>
+                        </div><br>
+                        <div class="altbg">
+                            <center><a href="https://discord.gg/J5ZDsak">Join the Discord server</a></center>
+                        </div><br>
                     </div>
                     <div class="customtopLeft">
                         <form method="post" enctype="multipart/form-data">
