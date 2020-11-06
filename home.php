@@ -78,6 +78,20 @@
                     </div>
                 <?php } ?>
                 <script src='/js/limit.js'></script><br>
+                <?php if(!isset($_GET['page'])) { ?>
+                    <table id="cols">
+                        <tr>
+                            <th style="width: 33%;">&nbsp;</th>
+                            <th style="width: 33%;">&nbsp;</th>
+                            <th style="width: 33%;">&nbsp;</th>
+                        </tr>
+                        <tr style="vertical-align: top;">
+                            <td id="cBorder" <?php if(!isset($_GET['t'])) { ?> style="background-color: #F8F8F8; border-bottom: 1px dashed #333;" <?php } ?>><b><a id="blacklink" href="?t=latest">Latest</a></b></td>
+                            <td id="cBorder" <?php if(isset($_GET['t']) && $_GET['t'] == "popular") { ?> style="background-color: #F8F8F8; border-bottom: 1px dashed #333;" <?php } ?>><b><a id="blacklink" href="?t=popular">Most Popular</a></b></td>
+                            <td id="cBorder" <?php if(isset($_GET['t']) && $_GET['t'] == "oldest") { ?> style="background-color: #F8F8F8; border-bottom: 1px dashed #333;" <?php } ?>><b><a id="blacklink" href="?t=oldest">Oldest</a></b></td>
+                        </tr>
+                    </table><br>
+                <?php } ?>
                 <table id="feed">
                     <tr>
                         <th style="width: 48px;">&nbsp;</th>
@@ -100,7 +114,7 @@
                                     <td>
                                         <img id="pfp" src="/dynamic/pfp/<?php echo getPFPFromUser($row['author'], $conn); ?>">
                                     </td>
-                                    <td><a href="/u.php?n=<?php echo handleTag($row['author']); ?>"><?php echo($row['author']); ?></a>
+                                    <td><a id="tag" href="/u.php?n=<?php echo handleTag($row['author']); ?>"><?php echo($row['author']); ?></a>
                                         <?php if(returnVerifiedFromUsername($row['author'], $conn) != "") { ?> <span style="border-radius: 10px; background-color: deepskyblue; color: white; padding: 3px;"><?php echo(returnVerifiedFromUsername($row['author'], $conn)); ?></span> <?php } ?>
                                         <div id="floatRight" class="dropdown">
                                             <span><img style="vertical-align: middle;" src="/static/witter-dotdotdot.png"></span>
@@ -112,16 +126,18 @@
                                                 <?php } ?>
                                             </div>
                                         </div>
-                                        <div id="feedtext"><?php echo parseText($row['contents']); ?> </div>
-                                        <small><?php echo time_elapsed_string($row['date']); ?> from web
+                                        <span id="floatRight">
                                             <?php if(ifLiked($_SESSION['siteusername'], $row['id'], $conn) == true) { ?>
-                                                <a href="/unlike.php?id=<?php echo $row['id']; ?>"><img style="vertical-align: middle;" src="/static/witter-like.png">Unlike</a>
+                                                <a href="/unlike.php?id=<?php echo $row['id']; ?>"><img style="vertical-align: middle;" src="/static/witter-like.png"></a>
                                             <?php } else { ?>
-                                                <a href="/like.php?id=<?php echo $row['id']; ?>"><img style="vertical-align: middle;" src="/static/witter-liked.png">Like</a>
+                                                <a href="/like.php?id=<?php echo $row['id']; ?>"><img style="vertical-align: middle;" src="/static/witter-liked.png"></a>
                                             <?php } ?>
-                                            <a href="/v.php?rid=<?php echo $row['realid']; ?>"><img style="vertical-align: middle;" src="/static/witter-reply.png">Reply</a>
-                                            <?php echo getComments($row['realid'], $conn); ?><img style="vertical-align: middle;" src="/static/witter-replies.png">
-                                            <a href="/home.php?text=https://witter.spacemy.xyz/embed/?i=<?php echo $row['realid']; ?>"><img style="vertical-align: middle;" src="/static/witter-reweet.png">Reweet</a>
+                                        </span>
+                                        <div id="feedtext"><?php echo parseText($row['contents']); ?> </div>
+                                        <small id="grey">about <?php echo time_elapsed_string($row['date']); ?> from web
+                                            <span id="floatRight">
+                                                <?php echo getComments($row['realid'], $conn); ?><img style="vertical-align: middle;" src="/static/witter-replies.png"> &bull; <a href="/v.php?rid=<?php echo $row['realid']; ?>">Reply</a> &bull; <a href="/home.php?text=https://witter.spacemy.xyz/embed/?i=<?php echo $row['realid']; ?>">Reweet</a>
+                                            </span>
                                         </small><br>
                                         <?php
                                             $likes = getLikesReal($row['id'], $conn);

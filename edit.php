@@ -87,36 +87,38 @@
                     <tr>
                         <big><big><big>
                             <td>
-                                <img id="pfp" src="/dynamic/pfp/<?php echo getPFPFromUser($weet['author'], $conn); ?>">
+                                <img id="pfp" src="/dynamic/pfp/<?php echo getPFPFromUser($row['author'], $conn); ?>">
                             </td>
-                            <td><a href="/u.php?n=<?php echo handleTag($weet['author']); ?>"><?php echo($weet['author']); ?></a>
-                                <?php if(returnVerifiedFromUsername($weet['author'], $conn) != "") { ?> <span style="border-radius: 10px; background-color: deepskyblue; color: white; padding: 3px;"><?php echo(returnVerifiedFromUsername($weet['author'], $conn)); ?></span> <?php } ?>
+                            <td><a id="tag" href="/u.php?n=<?php echo handleTag($row['author']); ?>"><?php echo($row['author']); ?></a>
+                                <?php if(returnVerifiedFromUsername($row['author'], $conn) != "") { ?> <span style="border-radius: 10px; background-color: deepskyblue; color: white; padding: 3px;"><?php echo(returnVerifiedFromUsername($row['author'], $conn)); ?></span> <?php } ?>
                                 <div id="floatRight" class="dropdown">
                                     <span><img style="vertical-align: middle;" src="/static/witter-dotdotdot.png"></span>
                                     <div class="dropdown-content">
-                                        <a href="#<?php //echo report.php?r=$weet['realid']; ?>"><img style="vertical-align: middle;" src="/static/witter-report.png"></a><br>
-                                        <?php if(isset($_SESSION['siteusername']) && $weet['author'] == $_SESSION['siteusername']) { ?>
-                                            <a href="/delete.php?rid=<?php echo $weet['realid']; ?>"><img style="vertical-align: middle;" src="/static/witter-trash.png"></a><br>
-                                            <a href="/edit.php?rid=<?php echo $weet['realid']; ?>"><img style="vertical-align: middle;" src="/static/witter-edit.png"></a><br>
+                                        <a href="#<?php //echo report.php?r=$row['realid']; ?>"><img style="vertical-align: middle;" src="/static/witter-report.png"></a><br>
+                                        <?php if(isset($_SESSION['siteusername']) && $row['author'] == $_SESSION['siteusername']) { ?>
+                                            <a href="/delete.php?rid=<?php echo $row['realid']; ?>"><img style="vertical-align: middle;" src="/static/witter-trash.png"></a><br>
+                                            <a href="/edit.php?rid=<?php echo $row['realid']; ?>"><img style="vertical-align: middle;" src="/static/witter-edit.png"></a><br>
                                         <?php } ?>
                                     </div>
                                 </div>
-                                <div id="feedtext"><?php echo parseText($weet['contents']); ?> </div>
-                                <small><?php echo time_elapsed_string($weet['date']); ?> from web
-                                    <?php if(ifLiked($_SESSION['siteusername'], $weet['id'], $conn) == true) { ?>
-                                        <a href="/unlike.php?id=<?php echo $weet['id']; ?>"><img style="vertical-align: middle;" src="/static/witter-like.png">Unlike</a>
+                                <span id="floatRight">
+                                    <?php if(ifLiked($_SESSION['siteusername'], $row['id'], $conn) == true) { ?>
+                                        <a href="/unlike.php?id=<?php echo $row['id']; ?>"><img style="vertical-align: middle;" src="/static/witter-like.png"></a>
                                     <?php } else { ?>
-                                        <a href="/like.php?id=<?php echo $weet['id']; ?>"><img style="vertical-align: middle;" src="/static/witter-liked.png">Like</a>
+                                        <a href="/like.php?id=<?php echo $row['id']; ?>"><img style="vertical-align: middle;" src="/static/witter-liked.png"></a>
                                     <?php } ?>
-                                    <a href="/v.php?rid=<?php echo $weet['realid']; ?>"><img style="vertical-align: middle;" src="/static/witter-reply.png">Reply</a>
-                                    <?php echo getComments($weet['realid'], $conn); ?><img style="vertical-align: middle;" src="/static/witter-replies.png">
-                                    <a href="/home.php?text=https://witter.spacemy.xyz/embed/?i=<?php echo $weet['realid']; ?>"><img style="vertical-align: middle;" src="/static/witter-reweet.png">Reweet</a>
+                                </span>
+                                <div id="feedtext"><?php echo parseText($row['contents']); ?> </div>
+                                <small id="grey">about <?php echo time_elapsed_string($row['date']); ?> from web
+                                    <span id="floatRight">
+                                        <?php echo getComments($row['realid'], $conn); ?><img style="vertical-align: middle;" src="/static/witter-replies.png"> &bull; <a href="/v.php?rid=<?php echo $row['realid']; ?>">Reply</a> &bull; <a href="/home.php?text=https://witter.spacemy.xyz/embed/?i=<?php echo $row['realid']; ?>">Reweet</a>
+                                    </span>
                                 </small><br>
                                 <?php
-                                $likes = getLikesReal($weet['id'], $conn);
-                                while($weet = $likes->fetch_assoc()) {
+                                $likes = getLikesReal($row['id'], $conn);
+                                while($row = $likes->fetch_assoc()) {
                                     ?>
-                                    <a href="/u.php?n=<?php echo handleTag($weet['fromu']); ?>"><img style="width: 30px; height: 30px; margin-left: 2px;" id="pfp" src="/dynamic/pfp/<?php echo getPFPFromUser($weet['fromu'], $conn); ?>"></a>&nbsp;
+                                    <a href="/u.php?n=<?php echo handleTag($row['fromu']); ?>"><img style="width: 30px; height: 30px; margin-left: 2px;" id="pfp" src="/dynamic/pfp/<?php echo getPFPFromUser($row['fromu'], $conn); ?>"></a>&nbsp;
                                 <?php } ?>
                             </td>
                         </big></big></big>
