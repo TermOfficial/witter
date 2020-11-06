@@ -3,9 +3,10 @@ const likeImgHTML = "<img style=\"vertical-align: middle;\" src=\"/static/witter
 function like(id) {
 	let xht = new XMLHttpRequest();
 	xht.onreadystatechange = () => {
-		let newUnlikeButton = document.getElementById(`like-toggle-${id}`);
-		newUnlikeButton.setAttribute("onclick", `unlike(${id})`);
-		newUnlikeButton.innerHTML = unlikeImgHTML;
+		let newButton = document.getElementById(`like-toggle-${id}`);
+		newButton.setAttribute("onclick", `unlike(${id})`);
+		newButton.innerHTML = unlikeImgHTML;
+		delete newButton;
 	};
 	xht.open("GET", `/like.php?id=${id}`, true);
 	xht.send();
@@ -13,9 +14,10 @@ function like(id) {
 function unlike(id) {
 	let xht = new XMLHttpRequest();
 	xht.onreadystatechange = () => {
-		let newLikeButton = document.getElementById(`like-toggle-${id}`);
-		newLikeButton.setAttribute("onclick", `like(${id})`);
-		newLikeButton.innerHTML = likeImgHTML;
+		let newButton = document.getElementById(`like-toggle-${id}`);
+		newButton.setAttribute("onclick", `like(${id})`);
+		newButton.innerHTML = likeImgHTML;
+		delete newButton;
 	};
 	xht.open("GET", `/unlike.php?id=${id}`, true);
 	xht.send();
