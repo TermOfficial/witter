@@ -63,7 +63,7 @@
                 </table><br>
 
                 <div class="altbg">
-                    <b>Tweets</b><span id="floatRight"><?php echo getWeets(rhandleTag($_GET['n']), $conn); ?></span>
+                    <b>Weets</b><span id="floatRight"><?php echo getWeets(rhandleTag($_GET['n']), $conn); ?></span>
                 </div>
                 <span id="blue"><a style="text-decoration: none; padding-left: 5px;color: #6d94c8;" href="/favorites.php?n=<?php echo handleTag($user['username']); ?>">Favorites</a></span>
                 <br><br>
