@@ -131,9 +131,9 @@
                                     </div>
                                     <span id="floatRight">
                                 <?php if(ifLiked($_SESSION['siteusername'], $row['id'], $conn) == true) { ?>
-                                    <a href="#" onclick="like(<?=$row['id']?>)" class="like-toggle-<?=$row['id']?>"><img style="vertical-align: middle;" src="/static/witter-like.png"></a>
+                                    <a href="#" onclick="like(<?=$row['id']?>)" id="like-toggle-<?=$row['id']?>"><img style="vertical-align: middle;" src="/static/witter-like.png"></a>
                                 <?php } else { ?>
-                                    <a href="#" onclick="unlike(<?=$row['id']?>)" class="like-toggle-<?=$row['id']?>"><img style="vertical-align: middle;" src="/static/witter-liked.png"></a>
+                                    <a href="#" onclick="unlike(<?=$row['id']?>)" id="like-toggle-<?=$row['id']?>"><img style="vertical-align: middle;" src="/static/witter-liked.png"></a>
                                 <?php } ?>
                             </span>
                                     <div id="feedtext"><?php echo parseText($row['contents']); ?> </div>
