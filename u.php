@@ -17,6 +17,7 @@
           content="<?php echo $user['bio']; ?>" />
     <meta property="og:image" content="https://witter.spacemy.xyz/dynamic/pfp/<?php echo $user['pfp']; ?>" />
     <script>function onLogin(token){ document.getElementById('submitform').submit(); }</script>
+	<script src="/js/i-have-no-idea-what-to-name-this-file-and-it-doesnt-really-matter.js"></script>
 </head>
 <body id="front">
 <div id="container">
@@ -130,9 +131,9 @@
                                     </div>
                                     <span id="floatRight">
                                 <?php if(ifLiked($_SESSION['siteusername'], $row['id'], $conn) == true) { ?>
-                                    <a href="/unlike.php?id=<?php echo $row['id']; ?>"><img style="vertical-align: middle;" src="/static/witter-like.png"></a>
+                                    <a href="#" onclick="like(<?=$row['id']?>)" class="like"><img style="vertical-align: middle;" src="/static/witter-like.png"></a>
                                 <?php } else { ?>
-                                    <a href="/like.php?id=<?php echo $row['id']; ?>"><img style="vertical-align: middle;" src="/static/witter-liked.png"></a>
+                                    <a href="#" onclick="unlike(<?=$row['id']?>)" class="unlike"><img style="vertical-align: middle;" src="/static/witter-liked.png"></a>
                                 <?php } ?>
                             </span>
                                     <div id="feedtext"><?php echo parseText($row['contents']); ?> </div>
