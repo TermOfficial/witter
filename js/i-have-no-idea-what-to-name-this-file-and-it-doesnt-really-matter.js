@@ -3,9 +3,7 @@ const likeImgHTML = "<img style=\"vertical-align: middle;\" src=\"/static/witter
 function like(id) {
 	let xht = new XMLHttpRequest();
 	xht.onreadystatechange = () => {
-		let newUnlikeButton = document.getElementsByClassName("like")[0];
-		newUnlikeButton.classList.add("unlike");
-		newUnlikeButton.classList.remove("like");
+		let newUnlikeButton = document.getElementById(`like-toggle-${id}`);
 		newUnlikeButton.setAttribute("onclick", `unlike(${id})`);
 		newUnlikeButton.innerHTML = unlikeImgHTML;
 	};
@@ -15,9 +13,7 @@ function like(id) {
 function unlike(id) {
 	let xht = new XMLHttpRequest();
 	xht.onreadystatechange = () => {
-		let newLikeButton = document.getElementsByClassName("unlike")[0];
-		newLikeButton.classList.add("like");
-		newLikeButton.classList.remove("unlike");
+		let newLikeButton = document.getElementById(`like-toggle-${id}`);
 		newLikeButton.setAttribute("onclick", `like(${id})`);
 		newLikeButton.innerHTML = likeImgHTML;
 	};
