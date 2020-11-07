@@ -17,9 +17,9 @@
           content="<?php echo $user['bio']; ?>" />
     <meta property="og:image" content="https://witter.spacemy.xyz/dynamic/pfp/<?php echo $user['pfp']; ?>" />
     <script>function onLogin(token){ document.getElementById('submitform').submit(); }</script>
-	<script src="/js/i-have-no-idea-what-to-name-this-file-and-it-doesnt-really-matter.js"></script>
+    <script src="/js/i-have-no-idea-what-to-name-this-file-and-it-doesnt-really-matter.js"></script>
 </head>
-<body id="front">
+<body id="front" <?php if($user['bg'] != "") { echo "style='background-repeat: repeat; background-image: url(" . str_replace('"', '\"', $user['bg']) . ");'"; }?>>
 <div id="container">
     <?php require($_SERVER['DOCUMENT_ROOT'] . "/static/header.php"); ?>
     <div id="content">
@@ -71,16 +71,16 @@
                 <div class="altbg">
                     <span id="blue">Followers</span><br>
                     <?php
-                        $stmt = $conn->prepare("SELECT * FROM follow WHERE reciever = ?");
-                        $stmt->bind_param("s", $user['username']);
-                        $stmt->execute();
-                        $result = $stmt->get_result();
-                        while($row = $result->fetch_assoc()) {
-                            ?>
-                            <a href="/u.php?n=<?php echo handleTag($row['sender']); ?>"><img style="width: 30px; height: 30px;" src="/dynamic/pfp/<?php echo getPFPFromUser($row['sender'], $conn); ?>"></a>
-                            <?php
-                        }
-                        $stmt->close();
+                    $stmt = $conn->prepare("SELECT * FROM follow WHERE reciever = ?");
+                    $stmt->bind_param("s", $user['username']);
+                    $stmt->execute();
+                    $result = $stmt->get_result();
+                    while($row = $result->fetch_assoc()) {
+                        ?>
+                        <a href="/u.php?n=<?php echo handleTag($row['sender']); ?>"><img style="width: 30px; height: 30px;" src="/dynamic/pfp/<?php echo getPFPFromUser($row['sender'], $conn); ?>"></a>
+                        <?php
+                    }
+                    $stmt->close();
                     ?>
                 </div><br>
                 <div class="altbg">
@@ -91,12 +91,12 @@
             <div class="customtopLeft">
                 <img id="pfp" style="height: 13%; width: 13%;" src="/dynamic/pfp/<?php echo $user['pfp']; ?>"><h1 style="margin-left: 80px;"><?php echo $user['username']; ?></h1><br>
                 <?php if(isset($_SESSION['errorMsg'])) { echo "<div style='padding: 5px; border: 5px solid green;'><h4 id='noMargin'>" . $_SESSION['errorMsg']; unset($_SESSION['errorMsg']); echo "</h4></div><br>"; }?>
-                    <?php
-                    if(ifFollowing(rhandleTag($_GET['n']), @$_SESSION['siteusername'], $conn) == false) {?>
-                        <a href="/follow.php?n=<?php echo $user['username']; ?>"><button>Follow</button></a>
-                    <?php } else { ?>
-                        <a href="/unfollow.php?n=<?php echo $user['username']; ?>"><button>Unfollow</button></a>
-                    <?php }
+                <?php
+                if(ifFollowing(rhandleTag($_GET['n']), @$_SESSION['siteusername'], $conn) == false) {?>
+                    <a href="/follow.php?n=<?php echo $user['username']; ?>"><button>Follow</button></a>
+                <?php } else { ?>
+                    <a href="/unfollow.php?n=<?php echo $user['username']; ?>"><button>Unfollow</button></a>
+                <?php }
                 ?>
                 <table id="feed">
                     <tr>
@@ -104,14 +104,14 @@
                         <th>&nbsp;</th>
                     </tr>
                     <?php
-                        $stmt = $conn->prepare("SELECT * FROM weets WHERE author = ?");
-                        $stmt->bind_param("s", $tag);
-                        $tag = rhandleTag($_GET['n']);
-                        $stmt->execute();
-                        $result = $stmt->get_result();
-                        if($result->num_rows === 0) echo('There are no weets.');
-                        while($row = $result->fetch_assoc()) {
-                    ?>
+                    $stmt = $conn->prepare("SELECT * FROM weets WHERE author = ?");
+                    $stmt->bind_param("s", $tag);
+                    $tag = rhandleTag($_GET['n']);
+                    $stmt->execute();
+                    $result = $stmt->get_result();
+                    if($result->num_rows === 0) echo('There are no weets.');
+                    while($row = $result->fetch_assoc()) {
+                        ?>
                         <tr>
                             <big><big><big>
                                 <td>
@@ -130,17 +130,17 @@
                                         </div>
                                     </div>
                                     <span id="floatRight">
-                                <?php if(ifLiked($_SESSION['siteusername'], $row['id'], $conn) == true) { ?>
-                                    <a href="#" onclick="unlike(<?=$row['id']?>)" id="like-toggle-<?=$row['id']?>"><img style="vertical-align: middle;" src="/static/witter-liked.png"></a>
-                                <?php } else { ?>
-                                    <a href="#" onclick="like(<?=$row['id']?>)" id="like-toggle-<?=$row['id']?>"><img style="vertical-align: middle;" src="/static/witter-like.png"></a>
-                                <?php } ?>
-                            </span>
+                                        <?php if(ifLiked($_SESSION['siteusername'], $row['id'], $conn) == true) { ?>
+                                            <a href="#" onclick="unlike(<?=$row['id']?>)" id="like-toggle-<?=$row['id']?>"><img style="vertical-align: middle;" src="/static/witter-liked.png"></a>
+                                        <?php } else { ?>
+                                            <a href="#" onclick="like(<?=$row['id']?>)" id="like-toggle-<?=$row['id']?>"><img style="vertical-align: middle;" src="/static/witter-like.png"></a>
+                                        <?php } ?>
+                                    </span>
                                     <div id="feedtext"><?php echo parseText($row['contents']); ?> </div>
                                     <small id="grey">about <?php echo time_elapsed_string($row['date']); ?> from web
                                         <span id="floatRight">
-                                    <?php echo getComments($row['realid'], $conn); ?><img style="vertical-align: middle;" src="/static/witter-replies.png"> &bull; <a href="/v.php?rid=<?php echo $row['realid']; ?>">Reply</a> &bull; <a href="/home.php?text=https://witter.spacemy.xyz/embed/?i=<?php echo $row['realid']; ?>">Reweet</a>
-                                </span>
+                                            <?php echo getComments($row['realid'], $conn); ?><img style="vertical-align: middle;" src="/static/witter-replies.png"> &bull; <a href="/v.php?rid=<?php echo $row['realid']; ?>">Reply</a> &bull; <a href="/home.php?text=https://witter.spacemy.xyz/embed/?i=<?php echo $row['realid']; ?>">Reweet</a>
+                                        </span>
                                     </small><br>
                                     <?php
                                     $likes = getLikesReal($row['id'], $conn);
@@ -151,9 +151,9 @@
                                 </td>
                             </big></big></big>
                         </tr>
-                    <?php
-                        }
-                        $stmt->close();
+                        <?php
+                    }
+                    $stmt->close();
                     ?>
                 </table>
             </div>

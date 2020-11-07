@@ -17,6 +17,20 @@
             if($_SERVER['REQUEST_METHOD'] == 'POST' && @$_POST['bioset']) {
                 updateUserBio($_SESSION['siteusername'], $_POST['bio'], $conn);
                 header("Location: index.php");
+            } else if($_SERVER['REQUEST_METHOD'] == 'POST' && @$_POST['bgset']) {
+                if (filter_var($_POST['bg'], FILTER_VALIDATE_URL) == FALSE) {
+                    $_SESSION['errorMsg'] = 'Invalid URL';
+                    goto skip;
+                }
+                $ext = substr($_POST['bg'], -4);
+                $ext = preg_replace("/\s+/", "", $ext);
+                $ext = str_replace(" ", "", $ext);
+                if($ext == ".png " || $ext == ".gif " || $ext == ".jpg ") {
+                    $_SESSION['errorMsg'] = 'URL does not end with .png, .gif, or .jpg';
+                    goto skip;
+                }
+                updateUserBG($_SESSION['siteusername'], $_POST['bg'], $conn);
+                skip:
             } else if($_SERVER['REQUEST_METHOD'] == 'POST' && @$_POST['pfpset']) {
                 ini_set('display_errors', 1);
                 ini_set('display_startup_errors', 1);
@@ -92,6 +106,10 @@
                             <b>Bio</b><br>
                             <textarea cols="56" id="biomd" placeholder="Bio" name="bio"><?php echo $user['bio'];?></textarea><br>
                             <input name="bioset" type="submit" value="Set">
+                        </form><br>
+                        <form method="post" enctype="multipart/form-data">
+                            <b>Background URL</b><br><?php if(isset($_SESSION['errorMsg'])) { echo "<div style='padding: 5px; border: 5px solid green;'><h4 id='noMargin'>" . $_SESSION['errorMsg']; unset($_SESSION['errorMsg']); echo "</h4></div><br>"; }?>
+                            <input size="50" type="text" value="<?php echo $user['bg'];?> " placeholder="Background Image" name="bg"> <input name="bgset" type="submit" value="Set">
                         </form><br>
                     </div>
                     <?php require($_SERVER['DOCUMENT_ROOT'] . "/static/footer.php"); ?>

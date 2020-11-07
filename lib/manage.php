@@ -17,6 +17,15 @@ function updateUserCSS($username, $css, $connection) {
     return true;
 }
 
+function updateUserBG($username, $bg, $connection) {
+    $stmt = $connection->prepare("UPDATE users SET bg = ? WHERE username = ?");
+    $stmt->bind_param("ss", $bg, $username);
+    $stmt->execute();
+    $stmt->close();
+
+    return true;
+}
+
 function updateUserGender($username, $gender, $connection) {
         $stmt = $connection->prepare("UPDATE users SET gender = ? WHERE username = ?");
         $stmt->bind_param("ss", $gender, $username);

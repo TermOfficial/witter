@@ -15,7 +15,7 @@
           content="<?php echo $weet['contents']; ?>" />
     <meta property="og:image" content="https://witter.spacemy.xyz/dynamic/pfp/<?php echo $user['pfp']; ?>" />
 </head>
-<body id="front">
+<body id="front" <?php if($user['bg'] != "") { echo "style='background-repeat: repeat; background-image: url(" . str_replace('"', '\"', $user['bg']) . ");'"; }?>>
 <div id="container">
     <?php require($_SERVER['DOCUMENT_ROOT'] . "/static/header.php");
     if($_SERVER['REQUEST_METHOD'] == 'POST') {
