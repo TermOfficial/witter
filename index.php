@@ -32,6 +32,14 @@
                                     $hash = $row['password'];
 
                                     if(!password_verify($password, $hash)){ $error = "incorrect username or password"; goto skip; }
+                                    $stmt = $conn->prepare("SELECT banstatus FROM users WHERE username = ?");
+                                    $stmt->bind_param("s", $username);
+                                    $stmt->execute();
+                                    $result = $stmt->get_result();
+                                    $row = $result->fetch_assoc();
+                                    $_SESSION['banstatus'] = $row['banstatus']; // this bit is useless but if the below code breaks the site change it to $_SESSION
+                                    if($row['banstatus'] == 'suspended'){ $error = "you're suspended"; goto skip; }
+                                    
                                     $_SESSION['siteusername'] = $username;
 
                                     header("Location: manage/");
