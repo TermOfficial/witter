@@ -14,7 +14,13 @@
 <body id="front">
 <div id="container">
     <?php require($_SERVER['DOCUMENT_ROOT'] . "/static/header.php");
+    $stmt = $conn->prepare("SELECT banstatus FROM users WHERE username = ?");
+    $stmt->bind_param("s", $username);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $row = $result->fetch_assoc();
     if($_SERVER['REQUEST_METHOD'] == 'POST') {
+        if($row['banstatus'] == 'suspended'){ $error = "you're suspended"; goto skipcomment; }
         if(!isset($_SESSION['siteusername'])){ $error = "you are not logged in"; goto skipcomment; }
         if(!$_POST['comment']){ $error = "your comment cannot be blank"; goto skipcomment; }
         if(strlen($_POST['comment']) > 500){ $error = "your comment must be shorter than 500 characters"; goto skipcomment; }
