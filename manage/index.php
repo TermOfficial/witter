@@ -14,6 +14,12 @@
 <body id="front">
     <div id="container">
         <?php require($_SERVER['DOCUMENT_ROOT'] . "/static/header.php");
+        $stmt = $conn->prepare("SELECT banstatus FROM users WHERE username = ?");
+    $stmt->bind_param("s", $username);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $row = $result->fetch_assoc();
+    if($row['banstatus'] == 'suspended'){ $_SESSION['errorMsg'] = "you're suspended"; }
             if($_SERVER['REQUEST_METHOD'] == 'POST' && @$_POST['bioset']) {
                 updateUserBio($_SESSION['siteusername'], $_POST['bio'], $conn);
                 header("Location: index.php");
